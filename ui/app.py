@@ -1117,7 +1117,7 @@ if "vigil_result" in st.session_state:
                 ("ADA", gl.get("ada_recommendation")),
                 ("Africa context", gl.get("africa_context")),
             ]:
-                if gl_text and gl_text.lower() not in ["not specified", "not applicable", ""]:
+                if gl_text and isinstance(gl_text, str) and gl_text.lower() not in ["not specified", "not applicable", ""]:
                     st.markdown(
                         f"<div class='africa-row'>"
                         f"<span class='africa-label'>{gl_name}</span>"
