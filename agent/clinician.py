@@ -67,7 +67,14 @@ def get_drug_interactions(drug_list: list[str]) -> list[DrugInteraction]:
     prompt = DDI_PROMPT.format(drug_list=", ".join(drug_list))
     try:
         items = _unwrap_list(_call(prompt))
-        return [DrugInteraction(**item) for item in items if isinstance(item, dict)]
+        normalized = []
+        for item in items:
+            if isinstance(item, dict):
+                for field in _LITERAL_LOWER_FIELDS:
+                    if field in item and isinstance(item[field], str):
+                        item[field] = item[field].lower()
+                normalized.append(DrugInteraction(**item))
+        return normalized
     except Exception as e:
         print(f"[clinician] DDI error: {e}")
         return []
@@ -77,16 +84,21 @@ def get_dosing(drug_name: str) -> list[DosingInfo]:
     prompt = DOSING_PROMPT.format(drug_name=drug_name)
     try:
         items = _unwrap_list(_call(prompt))
-        return [DosingInfo(**item) for item in items if isinstance(item, dict)]
+        return [DosingInfo(**{**item, "drug_name": drug_name}) for item in items if isinstance(item, dict)]
     except Exception as e:
         print(f"[clinician] dosing error: {e}")
         return []
 
 
+_LITERAL_LOWER_FIELDS = {"lactation_safety", "pregnancy_category", "evidence_level", "severity"}
+
 def get_special_populations(drug_name: str) -> Optional[SpecialPopulationFlags]:
     prompt = SPECIAL_POPULATIONS_PROMPT.format(drug_name=drug_name)
     try:
         data = _unwrap_dict(_call(prompt))
+        for field in _LITERAL_LOWER_FIELDS:
+            if field in data and isinstance(data[field], str):
+                data[field] = data[field].lower()
         return SpecialPopulationFlags(**{**data, "drug_name": drug_name})
     except Exception as e:
         print(f"[clinician] special pop error: {e}")
@@ -97,10 +109,14 @@ def get_pharmacogenomics(drug_name: str) -> list[PharmacogenomicsFlag]:
     prompt = PHARMACOGENOMICS_PROMPT.format(drug_name=drug_name)
     try:
         items = _unwrap_list(_call(prompt))
-        return [
-            PharmacogenomicsFlag(**{**item, "drug_name": drug_name})
-            for item in items if isinstance(item, dict)
-        ]
+        normalized = []
+        for item in items:
+            if isinstance(item, dict):
+                for field in _LITERAL_LOWER_FIELDS:
+                    if field in item and isinstance(item[field], str):
+                        item[field] = item[field].lower()
+                normalized.append(PharmacogenomicsFlag(**{**item, "drug_name": drug_name}))
+        return normalized
     except Exception as e:
         print(f"[clinician] PGx error: {e}")
         return []

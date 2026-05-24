@@ -26,7 +26,7 @@ def _call(prompt: str) -> str:
         model=MODEL,
         messages=[{"role": "user", "content": prompt}],
         temperature=0.1,
-        max_tokens=4096,
+        max_tokens=2048,
         response_format={"type": "json_object"},
     )
     return response.choices[0].message.content
@@ -53,26 +53,26 @@ def extract_signals(
 
     # paperclip_data is a list of result dicts
     if isinstance(paperclip_data, list):
-        for item in paperclip_data[:8]:
+        for item in paperclip_data[:5]:
             if isinstance(item, dict):
                 title = item.get("title", "")
-                abstract = item.get("abstract", item.get("content", ""))[:1000]
+                abstract = item.get("abstract", item.get("content", ""))[:400]
                 source = item.get("source", "paperclip")
                 context_blocks.append(f"SOURCE: {source} | {title}\n{abstract}")
     elif isinstance(paperclip_data, dict):
         for source, data in paperclip_data.items():
             if isinstance(data, dict) and "raw_text" in data:
-                context_blocks.append(f"=== {source.upper()} ===\n{data['raw_text'][:6000]}")
+                context_blocks.append(f"=== {source.upper()} ===\n{data['raw_text'][:1500]}")
             elif isinstance(data, list):
-                for item in data[:5]:
+                for item in data[:3]:
                     title = item.get("title", "")
-                    abstract = item.get("abstract", item.get("content", ""))[:1000]
+                    abstract = item.get("abstract", item.get("content", ""))[:400]
                     context_blocks.append(f"SOURCE: {source} | {title}\n{abstract}")
 
     for source_name, data in brightdata_data.items():
         if data.get("relevant") and data.get("content"):
             context_blocks.append(
-                f"=== LIVE: {source_name.upper()} ===\n{data['content'][:4000]}"
+                f"=== LIVE: {source_name.upper()} ===\n{data['content'][:1200]}"
             )
 
     if not context_blocks:
