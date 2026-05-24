@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 try:
-    from paperclip import PaperclipClient
+    from gxl_paperclip import PaperclipClient
     _client = PaperclipClient(api_key=os.getenv("PAPERCLIP_API_KEY"))
     _has_client = True
 except Exception:

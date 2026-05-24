@@ -38,9 +38,18 @@ def _run(query: str) -> str:
 
 
 def _get_headers() -> dict:
+    # Prefer API key (works in cloud without a credentials file)
+    api_key = os.getenv("PAPERCLIP_API_KEY")
+    if api_key:
+        return {
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json",
+            "User-Agent": "paperclip/0.1.4",
+        }
+    # Fall back to OAuth credentials file (local dev)
     creds = Credentials.load()
     if not creds:
-        raise RuntimeError("Not logged in to Paperclip. Run: paperclip login")
+        raise RuntimeError("Set PAPERCLIP_API_KEY or run: paperclip login")
     token = creds.get_id_token()
     return {
         "Authorization": f"Bearer {token}",
@@ -127,19 +136,17 @@ def _parse_run_output(raw: str) -> list[dict]:
 
 def search_safety_signals(drug_name: str, n: int = 8) -> list[dict]:
     """Search for safety signals across the biomedical corpus."""
-    query = f"{drug_name} adverse event safety signal warning contraindication -n {n}"
-    raw = _run(query)
-    results = _parse_run_output(raw)
-    print(f"[paperclip] safety search: {len(results)} papers")
+    query = f"{drug_name} adverse event safety signal warning contraindication"
+    results = _execute("search", f"{query} -n {n}")
+    print(f"[paperclip] safety search: {len(results)} papers", flush=True)
     return results
 
 
 def search_active_trials(drug_name: str, n: int = 15) -> list[dict]:
     """Search for active clinical trials."""
-    query = f"{drug_name} clinical trial recruiting active -n {n}"
-    raw = _run(query)
-    results = _parse_run_output(raw)
-    print(f"[paperclip] trials search: {len(results)} papers")
+    query = f"{drug_name} clinical trial recruiting active"
+    results = _execute("search", f"{query} -n {n}")
+    print(f"[paperclip] trials search: {len(results)} papers", flush=True)
     return results
 
 
