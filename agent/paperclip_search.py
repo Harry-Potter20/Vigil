@@ -1,7 +1,7 @@
 import os
 try:
     import streamlit as st
-    for _key in ["PAPERCLIP_API_KEY", "GROQ_API_KEY", "SCRAPERAPI_KEY"]:
+    for _key in ["PAPERCLIP_API_KEY", "GROQ_API_KEY", "SCRAPERAPI_KEY", "PAPERCLIP_CREDENTIALS_JSON"]:
         if _key in st.secrets and _key not in os.environ:
             os.environ[_key] = st.secrets[_key]
 except Exception:
@@ -37,19 +37,27 @@ def _run(query: str) -> str:
         return ""
 
 
+def _ensure_credentials_file():
+    """Write PAPERCLIP_CREDENTIALS_JSON secret to ~/.paperclip/credentials.json if absent."""
+    creds_json = os.getenv("PAPERCLIP_CREDENTIALS_JSON")
+    if not creds_json:
+        return
+    creds_file = os.path.expanduser("~/.paperclip/credentials.json")
+    if os.path.exists(creds_file):
+        return
+    os.makedirs(os.path.dirname(creds_file), exist_ok=True)
+    with open(creds_file, "w") as f:
+        f.write(creds_json)
+
+
 def _get_headers() -> dict:
-    # Prefer API key (works in cloud without a credentials file)
-    api_key = os.getenv("PAPERCLIP_API_KEY")
-    if api_key:
-        return {
-            "Authorization": f"Bearer {api_key}",
-            "Content-Type": "application/json",
-            "User-Agent": "paperclip/0.1.4",
-        }
-    # Fall back to OAuth credentials file (local dev)
+    _ensure_credentials_file()
     creds = Credentials.load()
     if not creds:
-        raise RuntimeError("Set PAPERCLIP_API_KEY or run: paperclip login")
+        raise RuntimeError(
+            "Paperclip not authenticated. Add PAPERCLIP_CREDENTIALS_JSON to secrets "
+            "(run `cat ~/.paperclip/credentials.json` locally to get the value)."
+        )
     token = creds.get_id_token()
     return {
         "Authorization": f"Bearer {token}",

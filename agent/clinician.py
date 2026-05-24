@@ -24,7 +24,7 @@ load_dotenv()
 
 def _get_client():
     return Groq(api_key=os.getenv("GROQ_API_KEY"))
-MODEL = "llama-3.3-70b-versatile"
+MODEL = "llama-3.1-8b-instant"
 
 
 def _call(prompt: str) -> str:
