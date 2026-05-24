@@ -1,0 +1,8 @@
+groq
+streamlit
+pydantic
+requests
+python-dotenv
+gxl_paperclip
+pandas
+fpdf2

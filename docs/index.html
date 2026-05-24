@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vigil — Know Before You Prescribe</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Source+Serif+4:ital,wght@0,300;0,400;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:      #faf7f2;
+      --bg2:     #f2ede4;
+      --border:  #e8e0d0;
+      --ink:     #1a1612;
+      --ink2:    #5a5144;
+      --ink3:    #9a8f7e;
+      --accent:  #BA7517;
+      --crit:    #c0392b;
+      --safe:    #3B6D11;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: 'Source Serif 4', Georgia, serif;
+      line-height: 1.7;
+    }
+
+    /* Nav */
+    nav {
+      border-bottom: 1.5px solid var(--ink);
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .nav-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--ink);
+      text-decoration: none;
+    }
+    .nav-cta {
+      background: var(--ink);
+      color: var(--bg);
+      padding: 0.5rem 1.2rem;
+      font-family: 'Source Serif 4', serif;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-decoration: none;
+      letter-spacing: 0.04em;
+    }
+    .nav-cta:hover { background: var(--accent); }
+
+    /* Hero */
+    .hero {
+      max-width: 800px;
+      margin: 5rem auto 3rem;
+      padding: 0 2rem;
+      text-align: center;
+    }
+    .hero-stat {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      margin-bottom: 1.5rem;
+    }
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.2rem, 5vw, 3.5rem);
+      font-weight: 700;
+      line-height: 1.15;
+      color: var(--ink);
+      margin-bottom: 1.25rem;
+    }
+    .hero p {
+      font-size: 1.1rem;
+      color: var(--ink2);
+      max-width: 560px;
+      margin: 0 auto 2rem;
+    }
+    .hero-btns {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .btn-primary {
+      background: var(--ink);
+      color: var(--bg);
+      padding: 0.75rem 1.8rem;
+      font-family: 'Source Serif 4', serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      text-decoration: none;
+      letter-spacing: 0.03em;
+    }
+    .btn-primary:hover { background: var(--accent); }
+    .btn-secondary {
+      background: transparent;
+      color: var(--ink);
+      padding: 0.75rem 1.8rem;
+      font-family: 'Source Serif 4', serif;
+      font-size: 0.95rem;
+      border: 1.5px solid var(--ink);
+      text-decoration: none;
+    }
+    .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* Stat strip */
+    .stats {
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: center;
+      gap: 0;
+      margin: 3rem 0;
+    }
+    .stat {
+      padding: 1.5rem 3rem;
+      text-align: center;
+      border-right: 1px solid var(--border);
+    }
+    .stat:last-child { border-right: none; }
+    .stat-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--ink);
+    }
+    .stat-label {
+      font-size: 0.78rem;
+      color: var(--ink3);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-top: 0.2rem;
+    }
+
+    /* Features */
+    .features {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 2rem 4rem;
+    }
+    .section-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--ink3);
+      border-bottom: 0.5px solid var(--border);
+      padding-bottom: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      margin-bottom: 3rem;
+    }
+    .feature-card {
+      background: var(--bg);
+      padding: 1.25rem 1.5rem;
+    }
+    .feature-card:hover { background: var(--bg2); }
+    .feature-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 0.4rem;
+    }
+    .feature-desc {
+      font-size: 0.85rem;
+      color: var(--ink2);
+      line-height: 1.6;
+    }
+
+    /* Africa callout */
+    .callout {
+      max-width: 700px;
+      margin: 0 auto 4rem;
+      padding: 2rem 2.5rem;
+      border: 1.5px solid var(--ink);
+      text-align: center;
+    }
+    .callout h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      margin-bottom: 0.75rem;
+    }
+    .callout p {
+      font-size: 0.9rem;
+      color: var(--ink2);
+      font-style: italic;
+    }
+    .callout .highlight {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      color: var(--accent);
+      margin-top: 1rem;
+      display: block;
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1.5px solid var(--ink);
+      padding: 1.5rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.78rem;
+      color: var(--ink3);
+      font-style: italic;
+    }
+    footer a { color: var(--ink3); }
+
+    @media (max-width: 600px) {
+      .stats { flex-direction: column; }
+      .stat { border-right: none; border-bottom: 1px solid var(--border); }
+      nav { padding: 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a class="nav-logo" href="#">Vigil</a>
+    <a class="nav-cta" href="https://vigil.streamlit.app" target="_blank">Try it free &rarr;</a>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-stat">
+      &#9889; ADRs cause 6.5% of hospital admissions &mdash; most are preventable
+    </div>
+    <h1>Know before<br>you prescribe.</h1>
+    <p>
+      Drug safety signals, interactions, dosing, and Africa formulary status
+      for any drug, any patient, in under 60 seconds.
+    </p>
+    <div class="hero-btns">
+      <a class="btn-primary" href="https://vigil.streamlit.app" target="_blank">Launch Vigil</a>
+      <a class="btn-secondary" href="https://github.com/Harry-Potter20/vigil" target="_blank">View on GitHub</a>
+    </div>
+  </section>
+
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-num">11M+</div>
+      <div class="stat-label">Papers indexed</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">225K+</div>
+      <div class="stat-label">FDA documents</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">&lt;60s</div>
+      <div class="stat-label">Per full scan</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">3</div>
+      <div class="stat-label">African regulators</div>
+    </div>
+  </div>
+
+  <section class="features">
+    <div class="section-label">Features</div>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-title">Safety signals</div>
+        <div class="feature-desc">FDA, medRxiv, PMC, WHO, NAFDAC, SAHPRA &mdash; severity-classified with evidence star ratings</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-title">Rising signal detection</div>
+        <div class="feature-desc">30-day vs 6-month publication velocity &mdash; catch emerging concerns before guidelines catch up</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-title">Trial cross-reference</div>
+        <div class="feature-desc">Active ClinicalTrials.gov studies flagged against detected signals with urgency rating</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-title">Safety scorecard</div>
+        <div class="feature-desc">Therapeutic alternatives compared on a /100 safety score &mdash; side by side</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-title">DDI checker</div>
+        <div class="feature-desc">Polypharmacy interaction pairs ranked by severity with mechanism and management</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-title">Dosage calculator</div>
+        <div class="feature-desc">Patient-specific dose with renal, hepatic, BSA, weight, and age adjustments</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-title">Special populations</div>
+        <div class="feature-desc">Pregnancy, lactation, geriatric, and paediatric flags per drug</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-title">Pharmacogenomics</div>
+        <div class="feature-desc">CYP2D6, CYP2C19, HLA-B, TPMT gene-drug interactions with evidence grading</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-title">Africa formulary</div>
+        <div class="feature-desc">NAFDAC (Nigeria), SAHPRA (South Africa), WHO prequalification &mdash; a data layer no equivalent tool provides</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-title">PDF clinical brief</div>
+        <div class="feature-desc">One-click structured export ready to attach to a patient chart or grand rounds</div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <h2>Built for Africa's clinicians first.</h2>
+      <p>
+        A clinician in Lagos, Nairobi, or Accra monitoring drug safety manually
+        checks FDA, WHO, NAFDAC, and SAHPRA across separate browser tabs.
+        Vigil does it in one scan.
+      </p>
+      <span class="highlight">
+        NAFDAC &middot; SAHPRA &middot; WHO Prequalification &middot; African market availability
+      </span>
+    </div>
+  </section>
+
+  <footer>
+    <span>Vigil by <a href="#">TIBA Health</a> &middot; Lagos, Nigeria</span>
+    <span>Not a substitute for clinical judgment</span>
+  </footer>
+
+</body>
+</html>
