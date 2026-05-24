@@ -1,3 +1,12 @@
+import os
+try:
+    import streamlit as st
+    for _key in ["PAPERCLIP_API_KEY", "GROQ_API_KEY", "SCRAPERAPI_KEY"]:
+        if _key in st.secrets and _key not in os.environ:
+            os.environ[_key] = st.secrets[_key]
+except Exception:
+    pass
+
 import json
 import requests
 from gxl_paperclip.credentials import Credentials
