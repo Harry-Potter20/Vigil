@@ -438,6 +438,17 @@ st.markdown(f"""
 </style>
 """, unsafe_allow_html=True)
 
+# ── Secrets health-check (shows a clear error instead of cryptic crash) ───────
+_missing_keys = [k for k in ["GROQ_API_KEY", "PAPERCLIP_API_KEY"] if not os.getenv(k)]
+if _missing_keys:
+    st.error(
+        f"**Configuration error** — the following API keys are not set: "
+        f"`{'`, `'.join(_missing_keys)}`\n\n"
+        f"In Streamlit Cloud: go to your app → **Settings → Secrets** and add:\n"
+        f"```\nGROQ_API_KEY = \"gsk_...\"\nPAPERCLIP_API_KEY = \"...\"\nSCRAPERAPI_KEY = \"...\"\n```",
+        icon="🔑",
+    )
+
 # ── Cold start splash ─────────────────────────────────────────────────────────
 import time as _time
 
@@ -594,16 +605,23 @@ with st.expander("Add co-medications for drug interaction check (optional)"):
 
 # ── Run pipeline ──────────────────────────────────────────────────────────────
 if run and drug_name:
-    with st.spinner(f"Scanning FDA · medRxiv · PMC · WHO · NAFDAC · SAHPRA for {drug_name}..."):
-        result, at_risk_trials, velocity_data, scorecard, clinician_data = run_vigil(
-            drug_name,
-            drug_list=drug_list if len(drug_list) >= 2 else None,
-        )
-    st.session_state["vigil_result"] = result
-    st.session_state["vigil_trials"] = at_risk_trials
-    st.session_state["vigil_velocity"] = velocity_data
-    st.session_state["vigil_scorecard"] = scorecard
-    st.session_state["vigil_clinician"] = clinician_data
+    if _missing_keys:
+        st.error("Cannot run scan — API keys are not configured. See the error above.")
+    else:
+        try:
+            with st.spinner(f"Scanning FDA · medRxiv · PMC · WHO · NAFDAC · SAHPRA for {drug_name}..."):
+                result, at_risk_trials, velocity_data, scorecard, clinician_data = run_vigil(
+                    drug_name,
+                    drug_list=drug_list if len(drug_list) >= 2 else None,
+                )
+            st.session_state["vigil_result"] = result
+            st.session_state["vigil_trials"] = at_risk_trials
+            st.session_state["vigil_velocity"] = velocity_data
+            st.session_state["vigil_scorecard"] = scorecard
+            st.session_state["vigil_clinician"] = clinician_data
+        except Exception as _exc:
+            st.error(f"Scan failed: {_exc}")
+            st.info("Check that GROQ_API_KEY, PAPERCLIP_API_KEY, and SCRAPERAPI_KEY are set in Streamlit Cloud → Settings → Secrets.")
 
 elif run and not drug_name:
     st.warning("Enter a drug name.")
