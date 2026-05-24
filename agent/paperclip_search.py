@@ -8,9 +8,33 @@ except Exception:
     pass
 
 import json
+import subprocess
 import requests
 from gxl_paperclip.credentials import Credentials
 from gxl_paperclip.config import get_base_url
+
+
+def _run(query: str) -> str:
+    """Call the paperclip CLI via subprocess and return raw stdout."""
+    cmd = ["paperclip", "search", query, "--json"]
+    try:
+        result = subprocess.run(
+            cmd,
+            capture_output=True,
+            text=True,
+            timeout=60,
+        )
+        if result.returncode != 0 or not result.stdout.strip():
+            print(f"[paperclip] cmd: {cmd}")
+            print(f"[paperclip] returncode: {result.returncode}")
+            print(f"[paperclip] stderr: {result.stderr[:500]}")
+        return result.stdout
+    except FileNotFoundError:
+        print(f"[paperclip] command not found — CLI not on PATH")
+        return ""
+    except Exception as e:
+        print(f"[paperclip] subprocess error: {e}")
+        return ""
 
 
 def _get_headers() -> dict:
@@ -84,18 +108,37 @@ def _parse_papers(output: str) -> list[dict]:
     return papers
 
 
+def _parse_run_output(raw: str) -> list[dict]:
+    """Try JSON parse first, fall back to CLI text parsing."""
+    if not raw or not raw.strip():
+        return []
+    try:
+        data = json.loads(raw)
+        if isinstance(data, list):
+            return data
+        if isinstance(data, dict):
+            for v in data.values():
+                if isinstance(v, list):
+                    return v
+    except (json.JSONDecodeError, ValueError):
+        pass
+    return _parse_papers(raw)
+
+
 def search_safety_signals(drug_name: str, n: int = 8) -> list[dict]:
     """Search for safety signals across the biomedical corpus."""
-    query = f"{drug_name} adverse event safety signal warning contraindication --n {n}"
-    results = _execute("search", query)
+    query = f"{drug_name} adverse event safety signal warning contraindication -n {n}"
+    raw = _run(query)
+    results = _parse_run_output(raw)
     print(f"[paperclip] safety search: {len(results)} papers")
     return results
 
 
 def search_active_trials(drug_name: str, n: int = 15) -> list[dict]:
     """Search for active clinical trials."""
-    query = f"{drug_name} clinical trial recruiting active --n {n} --source clinicaltrials"
-    results = _execute("search", query)
+    query = f"{drug_name} clinical trial recruiting active -n {n}"
+    raw = _run(query)
+    results = _parse_run_output(raw)
     print(f"[paperclip] trials search: {len(results)} papers")
     return results
 
