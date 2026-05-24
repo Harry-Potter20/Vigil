@@ -76,13 +76,21 @@ def extract_signals(
             )
 
     if not context_blocks:
-        return []
-
-    combined = "\n\n".join(context_blocks)
-    prompt = (
-        EXTRACTION_PROMPT.format(drug_name=drug_name)
-        + f"\n\n--- DOCUMENTS ---\n{combined}"
-    )
+        prompt = (
+            EXTRACTION_PROMPT.format(drug_name=drug_name)
+            + "\n\nNo real-time corpus data was retrieved. Use your clinical "
+            "pharmacology training knowledge to identify the most important known "
+            "safety signals for this drug — key adverse events, contraindications, "
+            "drug interactions, and warnings. Set source_name to 'Training knowledge' "
+            "and credibility to 'peer_reviewed' for well-established signals, "
+            "'regulatory' only for documented FDA/EMA actions."
+        )
+    else:
+        combined = "\n\n".join(context_blocks)
+        prompt = (
+            EXTRACTION_PROMPT.format(drug_name=drug_name)
+            + f"\n\n--- DOCUMENTS ---\n{combined}"
+        )
 
     try:
         raw = _call(prompt)
