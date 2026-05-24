@@ -5,6 +5,11 @@ import urllib.parse
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import streamlit as st
+import os
+_groq_from_secrets = st.secrets.get("GROQ_API_KEY", "NOT_FOUND")
+_groq_from_env = os.environ.get("GROQ_API_KEY", "NOT_IN_ENV")
+print(f"[DEBUG] secrets GROQ_API_KEY present: {bool(_groq_from_secrets and _groq_from_secrets != 'NOT_FOUND')}")
+print(f"[DEBUG] env GROQ_API_KEY present: {bool(_groq_from_env and _groq_from_env != 'NOT_IN_ENV')}")
 from main import run_vigil
 from agent.export import generate_brief
 from agent.drugs import fuzzy_correct, exact_or_closest
