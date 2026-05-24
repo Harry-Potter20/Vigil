@@ -14,7 +14,8 @@ from agent.schemas import SafetySignal
 
 load_dotenv()
 
-client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+def _get_client():
+    return Groq(api_key=os.getenv("GROQ_API_KEY"))
 MODEL = "llama-3.3-70b-versatile"
 
 ALTERNATIVES_PROMPT = """
@@ -29,7 +30,7 @@ def _get_alternatives(drug_name: str) -> list[str]:
     """Get therapeutic alternatives for a drug."""
     try:
         prompt = ALTERNATIVES_PROMPT.format(drug_name=drug_name)
-        response = client.chat.completions.create(
+        response = _get_client().chat.completions.create(
             model=MODEL,
             messages=[{"role": "user", "content": prompt}],
             temperature=0.1,

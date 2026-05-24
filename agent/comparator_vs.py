@@ -20,7 +20,8 @@ from prompts.comparison import (
 
 load_dotenv()
 
-client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+def _get_client():
+    return Groq(api_key=os.getenv("GROQ_API_KEY"))
 MODEL = "llama-3.3-70b-versatile"
 
 PAPERCLIP_API_KEY = os.getenv("PAPERCLIP_API_KEY")
@@ -28,7 +29,7 @@ PAPERCLIP_API_KEY = os.getenv("PAPERCLIP_API_KEY")
 
 def _groq(prompt: str, max_tokens: int = 2048) -> dict | list:
     """Call Groq and parse JSON response."""
-    response = client.chat.completions.create(
+    response = _get_client().chat.completions.create(
         model=MODEL,
         messages=[{"role": "user", "content": prompt}],
         temperature=0.1,
