@@ -1,7 +1,7 @@
 import os
 try:
     import streamlit as st
-    for _key in ["PAPERCLIP_API_KEY", "GROQ_API_KEY", "SCRAPERAPI_KEY", "PAPERCLIP_CREDENTIALS_JSON"]:
+    for _key in ["PAPERCLIP_API_KEY", "GROQ_API_KEY", "SCRAPERAPI_KEY", "PAPERCLIP_CREDENTIALS_B64"]:
         if _key in st.secrets and _key not in os.environ:
             os.environ[_key] = st.secrets[_key]
 except Exception:
@@ -38,16 +38,17 @@ def _run(query: str) -> str:
 
 
 def _ensure_credentials_file():
-    """Write PAPERCLIP_CREDENTIALS_JSON secret to ~/.paperclip/credentials.json if absent."""
-    creds_json = os.getenv("PAPERCLIP_CREDENTIALS_JSON")
-    if not creds_json:
+    """Write Paperclip credentials from a base64-encoded secret to ~/.paperclip/credentials.json."""
+    b64 = os.getenv("PAPERCLIP_CREDENTIALS_B64")
+    if not b64:
         return
     creds_file = os.path.expanduser("~/.paperclip/credentials.json")
     if os.path.exists(creds_file):
         return
+    import base64
     os.makedirs(os.path.dirname(creds_file), exist_ok=True)
     with open(creds_file, "w") as f:
-        f.write(creds_json)
+        f.write(base64.b64decode(b64).decode())
 
 
 def _get_headers() -> dict:
