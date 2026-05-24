@@ -5,15 +5,6 @@ import urllib.parse
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import streamlit as st
-import os, sys as _sys
-try:
-    _secrets_keys = list(st.secrets.keys())
-    print(f"[DEBUG] st.secrets accessible, keys: {_secrets_keys}", flush=True)
-    print(f"[DEBUG] GROQ_API_KEY in secrets: {'GROQ_API_KEY' in _secrets_keys}", flush=True)
-except Exception as _se:
-    print(f"[DEBUG] st.secrets raised: {type(_se).__name__}: {_se}", flush=True)
-print(f"[DEBUG] GROQ_API_KEY in env: {bool(os.environ.get('GROQ_API_KEY'))}", flush=True)
-_sys.stdout.flush()
 from main import run_vigil
 from agent.export import generate_brief
 from agent.drugs import fuzzy_correct, exact_or_closest
