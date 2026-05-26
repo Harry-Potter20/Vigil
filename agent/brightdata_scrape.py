@@ -56,18 +56,25 @@ def scrape_url(url: str, render: bool = False) -> str:
 
 def scrape_live_sources(drug_name: str) -> dict:
     """
-    Scrape WHO, NAFDAC, and SAHPRA for drug-specific content.
+    Scrape WHO, NAFDAC, and SAHPRA in parallel.
     Returns dict of source_name → {url, content, relevant}.
     """
-    results = {}
-    for source_name, config in LIVE_SOURCES.items():
+    from concurrent.futures import ThreadPoolExecutor, as_completed
+
+    def _one(name, config):
         raw = scrape_url(config["url"], render=config["render"])
         relevant = drug_name.lower() in raw.lower()
-        results[source_name] = {
-            "url":      config["url"],
-            "content":  raw[:8000] if relevant else "",
+        print(f"[scraper] {name}: {'relevant' if relevant else 'not mentioned'}", flush=True)
+        return name, {
+            "url":     config["url"],
+            "content": raw[:8000] if relevant else "",
             "relevant": relevant,
         }
-        status = "relevant" if relevant else "not mentioned"
-        print(f"[scraper] {source_name}: {status}")
+
+    results = {}
+    with ThreadPoolExecutor(max_workers=len(LIVE_SOURCES)) as ex:
+        futures = {ex.submit(_one, name, cfg): name for name, cfg in LIVE_SOURCES.items()}
+        for f in as_completed(futures):
+            name, data = f.result()
+            results[name] = data
     return results
