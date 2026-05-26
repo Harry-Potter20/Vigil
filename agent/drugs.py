@@ -25,8 +25,10 @@ DRUG_LIST = [
     "paracetamol", "ibuprofen", "diclofenac", "tramadol", "morphine",
     "gabapentin", "pregabalin", "amitriptyline", "fluoxetine", "sertraline",
     "haloperidol", "diazepam",
-    # Respiratory
+    # Respiratory / allergy
     "salbutamol", "budesonide", "fluticasone", "montelukast",
+    "loratadine", "cetirizine", "fexofenadine", "promethazine",
+    "ipratropium", "theophylline",
     # GI
     "omeprazole", "pantoprazole", "ondansetron", "metoclopramide",
     # Other
@@ -67,5 +69,5 @@ def exact_or_closest(input_name: str) -> str:
     query = input_name.lower().strip()
     if query in DRUG_LIST:
         return query
-    matches = fuzzy_correct(query, n=1, cutoff=0.6)
+    matches = fuzzy_correct(query, n=1, cutoff=0.82)
     return matches[0] if matches else query
